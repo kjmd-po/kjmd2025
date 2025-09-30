@@ -1,0 +1,347 @@
+---
+layout: default
+---
+
+{% if page.header.overlay_color or page.header.overlay_image or page.header.image %}
+  {% include page__hero.html %}
+{% elsif page.header.video.id and page.header.video.provider %}
+  {% include page__hero_video.html %}
+{% endif %}
+
+{% assign breadcrumbs_enabled = site.breadcrumbs %}
+{% if page.breadcrumbs != null %}
+  {% assign breadcrumbs_enabled = page.breadcrumbs %}
+{% endif %}
+{% if page.url != "/" and breadcrumbs_enabled %}
+  {% unless paginator %}
+    {% include breadcrumbs.html %}
+  {% endunless %}
+{% endif %}
+
+<div id="main" role="main">
+  {% include sidebar.html %}
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork"{% if page.locale %} lang="{{ page.locale }}"{% endif %}>
+    {% if page.title %}<meta itemprop="headline" content="{{ page.title | replace: '|', '&#124;' | markdownify | strip_html | strip_newlines | escape_once }}">{% endif %}
+    {% if page.excerpt %}<meta itemprop="description" content="{{ page.excerpt | markdownify | strip_html | strip_newlines | escape_once }}">{% endif %}
+    {% if page.date %}<meta itemprop="datePublished" content="{{ page.date | date_to_xmlschema }}">{% endif %}
+    {% if page.last_modified_at %}<meta itemprop="dateModified" content="{{ page.last_modified_at | date_to_xmlschema }}">{% endif %}
+
+    <div class="page__inner-wrap">
+      {% unless page.header.overlay_color or page.header.overlay_image %}
+        <header>
+          {% if page.title -%}
+          <h1 id="page-title" class="page__title" itemprop="headline">
+            <a href="{{ page.url | absolute_url }}" itemprop="url">{{ page.title | markdownify | remove: "<p>" | remove: "</p>" }}</a>
+          </h1>
+          {%- endif %}
+          {% include page__meta.html %}
+        </header>
+      {% endunless %}
+
+      <section class="page__content" itemprop="text">
+        {% if page.toc %}
+          <aside class="sidebar__right {% if page.toc_sticky %}sticky{% endif %}">
+            <nav class="toc">
+              <header><h4 class="nav__title"><i class="fas fa-{{ page.toc_icon | default: 'file-alt' }}"></i> {{ page.toc_label | default: site.data.ui-text[site.locale].toc_label | default: "On this page" }}</h4></header>
+              {% include toc.html sanitize=true html=content h_min=1 h_max=6 class="toc__menu" skip_no_ids=true %}
+            </nav>
+          </aside>
+        {% endif %}
+        
+        <!-- ===== Presentations (Oral & Poster) ===== -->
+        <div class="presentations">
+
+          <style>
+            /* Pastel-blue card UI (scoped) */
+            .presentations{
+              --brand:#2a7ae2;
+              --card-bg:#eef5ff;
+              --card-br:#cfe1ff;
+              --card-shadow:rgba(42,122,226,.09);
+              --chip-bg:#e7f0ff;
+              --chip-br:#c6d8ff;
+              --chip-fg:#1f3b7b;
+              --muted:#5976a8;
+              --title:#123665;
+            }
+            .presentations h2{
+              font-weight:800; margin:2rem 0 1rem;
+              color:#1c3a73;
+              display:flex; align-items:center; gap:.6rem;
+            }
+            .presentations .wrap{ max-width:980px; margin:0 auto; }
+
+            /* card */
+            .talk-card{
+              background:var(--card-bg);
+              border:1px solid var(--card-br);
+              border-radius:16px;
+              box-shadow:0 8px 22px var(--card-shadow);
+              padding:14px 16px;
+              margin:12px 0;
+              transition:border-color .15s ease, box-shadow .15s ease, transform .15s ease;
+            }
+            .talk-card:hover{ border-color:#b9d1ff; box-shadow:0 12px 28px rgba(42,122,226,.14); transform:translateY(-1px); }
+
+            .talk-top{
+              display:flex; align-items:center; gap:.5rem; flex-wrap:wrap; margin-bottom:.35rem;
+            }
+            .chip{
+              display:inline-block; font-weight:800; font-size:.78rem;
+              background:var(--chip-bg); color:var(--chip-fg);
+              border:1px solid var(--chip-br); border-radius:999px;
+              padding:.2rem .55rem;
+            }
+            .chip.type-oral{ background:#dbe7ff; }
+            .chip.type-poster{ background:#eaf3ff; }
+            .chip.affil{ background:#f0f6ff; font-weight:700; }
+
+            .talk-title{ margin:.2rem 0 .25rem; color:var(--title); line-height:1.35; font-weight:800; }
+            .talk-meta{ color:var(--muted); font-size:.95rem; }
+            .talk-meta strong{ color:#1c2f55; }
+
+            @media (max-width:560px){
+              .talk-card{ padding:12px 14px; }
+              .talk-title{ font-size:1rem; }
+            }
+          </style>
+
+          <div class="wrap">
+
+            <!-- ORAL -->
+            <h2>Oral Presentations</h2>
+
+            <article class="talk-card">
+              <div class="talk-top">
+                <span class="chip type-oral">Oral</span>
+                <span class="chip affil">POSTECH</span>
+              </div>
+              <h3 class="talk-title">Open-domain Multimodal Multihop Retrieval by Late Interactioning in a Bigranular Graph Structure</h3>
+              <div class="talk-meta">Presenter: <strong>Joohyung Yun</strong></div>
+            </article>
+
+            <article class="talk-card">
+              <div class="talk-top">
+                <span class="chip type-oral">Oral</span>
+                <span class="chip affil">POSTECH</span>
+              </div>
+              <h3 class="talk-title">Efficient Knowledge Graph Querying via Schema-Driven Approximate Distance Joins</h3>
+              <div class="talk-meta">Presenter: <strong>Sangoh Lee</strong></div>
+            </article>
+
+            <article class="talk-card">
+              <div class="talk-top">
+                <span class="chip type-oral">Oral</span>
+                <span class="chip affil">POSTECH</span>
+              </div>
+              <h3 class="talk-title">Benchmark for Multi-hop QA over Text and Tables</h3>
+              <div class="talk-meta">Presenter: <strong>Sungho Park</strong></div>
+            </article>
+
+            <article class="talk-card">
+              <div class="talk-top">
+                <span class="chip type-oral">Oral</span>
+                <span class="chip affil">POSTECH</span>
+              </div>
+              <h3 class="talk-title">Cardinality Estimation under Data Updates</h3>
+              <div class="talk-meta">Presenter: <strong>Yukyoung Lee</strong></div>
+            </article>
+
+            <article class="talk-card">
+              <div class="talk-top">
+                <span class="chip type-oral">Oral</span>
+                <span class="chip affil">POSTECH</span>
+              </div>
+              <h3 class="talk-title">A Fast Database Replay System</h3>
+              <div class="talk-meta">Presenter: <strong>Wonseok Lee</strong></div>
+            </article>
+
+            <article class="talk-card">
+              <div class="talk-top">
+                <span class="chip type-oral">Oral</span>
+                <span class="chip affil">UOsaka</span>
+              </div>
+              <h3 class="talk-title">Verifiable Machine Learning: Bridging the Trust Gap</h3>
+              <div class="talk-meta">Presenter: <strong>Lyu He</strong></div>
+            </article>
+
+            <article class="talk-card">
+              <div class="talk-top">
+                <span class="chip type-oral">Oral</span>
+                <span class="chip affil">UOsaka</span>
+              </div>
+              <h3 class="talk-title">Accelerating LocalSearch++ for K-Means++ Clustering with Projection-Based Distance Lower Bounds</h3>
+              <div class="talk-meta">Presenter: <strong>Takahiro Mitani</strong></div>
+            </article>
+
+            <article class="talk-card">
+              <div class="talk-top">
+                <span class="chip type-oral">Oral</span>
+                <span class="chip affil">UOsaka</span>
+              </div>
+              <h3 class="talk-title">Knowledge Distillation from Multiple GNNs to a Single MLP: An Approach via Aggregation of Individually Distilled MLPs</h3>
+              <div class="talk-meta">Presenter: <strong>Itsuki Nakayama</strong></div>
+            </article>
+
+            <article class="talk-card">
+              <div class="talk-top">
+                <span class="chip type-oral">Oral</span>
+                <span class="chip affil">UOsaka</span>
+              </div>
+              <h3 class="talk-title">Benchmarking Popularity Bias in Recommender Systems: A Comprehensive Evaluation across Diverse Datasets</h3>
+              <div class="talk-meta">Presenter: <strong>Yutaka Kojima</strong></div>
+            </article>
+
+            <article class="talk-card">
+              <div class="talk-top">
+                <span class="chip type-oral">Oral</span>
+                <span class="chip affil">UOsaka</span>
+              </div>
+              <h3 class="talk-title">The Hidden Strength of Disagreement: Unraveling the Consensus-diversity Tradeoff in Adaptive Multi-agent Systems</h3>
+              <div class="talk-meta">Presenter: <strong>Zengqing Wu</strong></div>
+            </article>
+
+            <!-- POSTER -->
+            <h2>Poster Presentations</h2>
+
+            <article class="talk-card">
+              <div class="talk-top">
+                <span class="chip type-poster">Poster</span>
+                <span class="chip affil">POSTECH</span>
+              </div>
+              <h3 class="talk-title">Efficient Execution of AI Operators</h3>
+              <div class="talk-meta">Presenter: <strong>Jaehyun Ha</strong></div>
+            </article>
+
+            <article class="talk-card">
+              <div class="talk-top">
+                <span class="chip type-poster">Poster</span>
+                <span class="chip affil">POSTECH</span>
+              </div>
+              <h3 class="talk-title">Comparative Analysis of Cache Replacement Algorithms in Cloud DBMS</h3>
+              <div class="talk-meta">Presenter: <strong>Taejun Yoon</strong></div>
+            </article>
+
+            <article class="talk-card">
+              <div class="talk-top">
+                <span class="chip type-poster">Poster</span>
+                <span class="chip affil">POSTECH</span>
+              </div>
+              <h3 class="talk-title">Robust Validation of Machine Unlearning through Query Executions over an Aligned Database</h3>
+              <div class="talk-meta">Presenter: <strong>Jooyoung Lee</strong></div>
+            </article>
+
+            <article class="talk-card">
+              <div class="talk-top">
+                <span class="chip type-poster">Poster</span>
+                <span class="chip affil">POSTECH</span>
+              </div>
+              <h3 class="talk-title">Understanding the Behavior of Cross-Modal Embeddings in Vector Search</h3>
+              <div class="talk-meta">Presenter: <strong>Hyojeong Yun</strong></div>
+            </article>
+
+            <article class="talk-card">
+              <div class="talk-top">
+                <span class="chip type-poster">Poster</span>
+                <span class="chip affil">POSTECH</span>
+              </div>
+              <h3 class="talk-title">Constructing Text Embedding for Accurate Text Retrieval using LLM</h3>
+              <div class="talk-meta">Presenter: <strong>Seungah Jang</strong></div>
+            </article>
+
+            <article class="talk-card">
+              <div class="talk-top">
+                <span class="chip type-poster">Poster</span>
+                <span class="chip affil">UOsaka</span>
+              </div>
+              <h3 class="talk-title">Shortest Distance Queries on Large-Scale Knowledge Graphs by Leveraging Cluster Structures</h3>
+              <div class="talk-meta">Presenter: <strong>Guangcan Li</strong></div>
+            </article>
+
+            <article class="talk-card">
+              <div class="talk-top">
+                <span class="chip type-poster">Poster</span>
+                <span class="chip affil">UOsaka</span>
+              </div>
+              <h3 class="talk-title">Language-Specific Scaling Law for Optimal Data Mixture in Multilingual Pre-Training</h3>
+              <div class="talk-meta">Presenter: <strong>Xuyang Cao </strong></div>
+            </article>
+
+            <article class="talk-card">
+              <div class="talk-top">
+                <span class="chip type-poster">Poster</span>
+                <span class="chip affil">UOsaka</span>
+              </div>
+              <h3 class="talk-title">Context-aware Human Trajectory Generation Using Reinforcement Learning</h3>
+              <div class="talk-meta">Presenter: <strong>Mengkun Gao </strong></div>
+            </article>
+
+            <article class="talk-card">
+              <div class="talk-top">
+                <span class="chip type-poster">Poster</span>
+                <span class="chip affil">UOsaka</span>
+              </div>
+              <h3 class="talk-title">Improving the Accuracy of the Classical Chinese Text Retrieval System</h3>
+              <div class="talk-meta">Presenter: <strong>Que Song</strong></div>
+            </article>
+
+            <article class="talk-card">
+              <div class="talk-top">
+                <span class="chip type-poster">Poster</span>
+                <span class="chip affil">UOsaka</span>
+              </div>
+              <h3 class="talk-title">Adaptive Select Layer: Automatically Detect the Optimal Attention Layer for Token Selection based on the Input Task</h3>
+              <div class="talk-meta">Presenter: <strong>Rei Taniguchi</strong></div>
+            </article>
+
+            <article class="talk-card">
+              <div class="talk-top">
+                <span class="chip type-poster">Poster</span>
+                <span class="chip affil">UOsaka</span>
+              </div>
+              <h3 class="talk-title">Workload Acceleration by Optimizing Materialized View Selection Using Local Search</h3>
+              <div class="talk-meta">Presenter: <strong>Kaina Anderson</strong></div>
+            </article>
+
+          </div>
+
+        </div>
+        <!-- ===== /Presentations ===== -->
+
+        {% if page.link %}<div><a href="{{ page.link }}" class="btn btn--primary">{{ site.data.ui-text[site.locale].ext_link_label | default: "Direct Link" }}</a></div>{% endif %}
+      </section>
+
+      <footer class="page__meta">
+        {% if site.data.ui-text[site.locale].meta_label %}
+          <h4 class="page__meta-title">{{ site.data.ui-text[site.locale].meta_label }}</h4>
+        {% endif %}
+        {% include page__taxonomy.html %}
+        {% include page__date.html %}
+      </footer>
+
+      {% if page.share %}{% include social-share.html %}{% endif %}
+
+      {% include post_pagination.html %}
+    </div>
+
+    {% if site.comments.provider and page.comments %}
+      {% if jekyll.environment == 'production' %}
+        {% include comments.html %}
+      {% else %}
+        <p>
+          Comments are configured with provider: <strong>{{ site.comments.provider }}</strong>,
+          but are disabled in non-production environments.
+        </p>
+      {% endif %}
+    {% endif %}
+  </article>
+
+  {% comment %}<!-- only show related on a post page when `related: true` -->{% endcomment %}
+  {% if page.id and page.related and site.related_posts.size > 0 %}
+    {% include page__related.html posts=site.related_posts %}
+  {% comment %}<!-- otherwise show recent posts if no related when `related: true` -->{% endcomment %}
+  {% elsif page.id and page.related %}
+    {% include page__related.html posts=site.posts %}
+  {% endif %}
+</div>

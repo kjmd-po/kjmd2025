@@ -1,0 +1,127 @@
+---
+layout: default
+---
+
+{% if page.header.overlay_color or page.header.overlay_image or page.header.image %}
+  {% include page__hero.html %}
+{% elsif page.header.video.id and page.header.video.provider %}
+  {% include page__hero_video.html %}
+{% endif %}
+
+{% assign breadcrumbs_enabled = site.breadcrumbs %}
+{% if page.breadcrumbs != null %}
+  {% assign breadcrumbs_enabled = page.breadcrumbs %}
+{% endif %}
+{% if page.url != "/" and breadcrumbs_enabled %}
+  {% unless paginator %}
+    {% include breadcrumbs.html %}
+  {% endunless %}
+{% endif %}
+
+<div id="main" role="main">
+  {% include sidebar.html %}
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork"{% if page.locale %} lang="{{ page.locale }}"{% endif %}>
+    {% if page.title %}<meta itemprop="headline" content="{{ page.title | replace: '|', '&#124;' | markdownify | strip_html | strip_newlines | escape_once }}">{% endif %}
+    {% if page.excerpt %}<meta itemprop="description" content="{{ page.excerpt | markdownify | strip_html | strip_newlines | escape_once }}">{% endif %}
+    {% if page.date %}<meta itemprop="datePublished" content="{{ page.date | date_to_xmlschema }}">{% endif %}
+    {% if page.last_modified_at %}<meta itemprop="dateModified" content="{{ page.last_modified_at | date_to_xmlschema }}">{% endif %}
+
+    <div class="page__inner-wrap">
+      {% unless page.header.overlay_color or page.header.overlay_image %}
+        <header>
+          {% if page.title -%}
+          <h1 id="page-title" class="page__title" itemprop="headline">
+            <a href="{{ page.url | absolute_url }}" itemprop="url">{{ page.title | markdownify | remove: "<p>" | remove: "</p>" }}</a>
+          </h1>
+          {%- endif %}
+          {% include page__meta.html %}
+        </header>
+      {% endunless %}
+
+      <section class="page__content" itemprop="text">
+        {% if page.toc %}
+          <aside class="sidebar__right {% if page.toc_sticky %}sticky{% endif %}">
+            <nav class="toc">
+              <header><h4 class="nav__title"><i class="fas fa-{{ page.toc_icon | default: 'file-alt' }}"></i> {{ page.toc_label | default: site.data.ui-text[site.locale].toc_label | default: "On this page" }}</h4></header>
+              {% include toc.html sanitize=true html=content h_min=1 h_max=6 class="toc__menu" skip_no_ids=true %}
+            </nav>
+          </aside>
+        {% endif %}
+
+
+        <!-- ===== Venue: Busan Central Hotel ===== -->
+        <section class="venue-block" aria-label="Venue">
+          <h2 style="font-size:clamp(1.75rem,1.2rem + 2vw,2.5rem);font-weight:800;margin:0 0 .75rem;text-align:center;color:var(--mm-primary,#2a7ae2);">
+            Central Hotel Haeundae
+          </h2>
+
+          <!-- 1) Your hero image (replace the path if needed) -->
+          <figure style="margin:0 auto 1rem; width:50%;">
+            <img src="{{ '/assets/images/busancentral.jpg' | relative_url }}"
+                alt="Haeundae Central Hotel"
+                style="width:100%; height:auto; border-radius:12px; display:block;">
+          </figure>
+
+          <!-- 2) Hotel info (fill the fields below using the official site) -->
+          <ul>
+            <li><strong>Address:</strong> 1122 Jungang-daero, Yeonje-gu, Busan 47520, South Korea</li>
+            <li><strong>Tel: </strong> +82-51-760-9000</li>
+            <li><strong>Website:</strong> <a href="http://www.centralhotel.kr/" target="_blank" rel="noopener">http://www.centralhotel.kr/</a></li>
+            <li><strong>Getting there:</strong> ~100 m from <em>Haeundae Station</em></li>
+            <!-- <li><strong>Parking:</strong> 1 free space per room (first-come).</li> -->
+            <!-- <li><strong>Wi-Fi:</strong> Free in rooms, lobby, and restaurant.</li> -->
+            <!-- <li><strong>Breakfast:</strong> Korean/Western options available in the 3F restaurant.</li> -->
+            <li><strong>Check-in/out:</strong> Check-in from 15:00; check-out until 11:00.</li>
+          </ul>
+
+          <!-- 3) Google Maps embed (your exact URL) -->
+          <div style="position:relative;padding-top:56.25%;border-radius:12px;overflow:hidden;">
+            <iframe
+              title="Map: Haeundae Central Hotel"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3261.831549617976!2d129.1669313!3d35.1608216!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x35688dbbe559c5af%3A0x332119e9ef3d6bf4!2z7ZW07Jq064yA7IS87Yq465-07Zi47YWU!5e0!3m2!1sko!2skr!4v1757174041806!5m2!1sko!2skr"
+              style="position:absolute;inset:0;border:0;width:100%;height:100%;"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              allowfullscreen>
+            </iframe>
+          </div>
+        </section>
+
+
+        {% if page.link %}<div><a href="{{ page.link }}" class="btn btn--primary">{{ site.data.ui-text[site.locale].ext_link_label | default: "Direct Link" }}</a></div>{% endif %}
+      </section>
+
+      <footer class="page__meta">
+        {% if site.data.ui-text[site.locale].meta_label %}
+          <h4 class="page__meta-title">{{ site.data.ui-text[site.locale].meta_label }}</h4>
+        {% endif %}
+        {% include page__taxonomy.html %}
+        {% include page__date.html %}
+      </footer>
+
+      {% if page.share %}{% include social-share.html %}{% endif %}
+
+      {% include post_pagination.html %}
+    </div>
+
+    {% if site.comments.provider and page.comments %}
+      {% if jekyll.environment == 'production' %}
+        {% include comments.html %}
+      {% else %}
+        <p>
+          Comments are configured with provider: <strong>{{ site.comments.provider }}</strong>,
+          but are disabled in non-production environments.
+        </p>
+      {% endif %}
+    {% endif %}
+  </article>
+
+  {% comment %}<!-- only show related on a post page when `related: true` -->{% endcomment %}
+  {% if page.id and page.related and site.related_posts.size > 0 %}
+    {% include page__related.html posts=site.related_posts %}
+  {% comment %}<!-- otherwise show recent posts if no related when `related: true` -->{% endcomment %}
+  {% elsif page.id and page.related %}
+    {% include page__related.html posts=site.posts %}
+  {% endif %}
+</div>

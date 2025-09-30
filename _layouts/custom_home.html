@@ -1,0 +1,469 @@
+---
+layout: default
+---
+
+<style>
+  /* ====== Full-bleed hero carousel ====== */
+  .kjmd-home .full-bleed {
+    width: 100vw;
+    margin-left: calc(50% - 50vw);   /* 컨텐츠 폭을 넘어 뷰포트 끝까지 확장 */
+  }
+  .kjmd-home .hero-carousel {
+    position: relative;
+    height: 75vh;                    /* 첫 화면을 크게 채움 (원하면 60~85vh로 조절) */
+    min-height: 420px;
+    overflow: hidden;
+    background: #000;
+    isolation: isolate;              /* overlay blending 안정화 */
+  }
+  .kjmd-home .hero-carousel .slides {
+    height: 100%;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 100%;
+    transform: translateX(var(--x, 0%));
+    transition: transform .6s ease;
+    touch-action: pan-y;
+  }
+  .kjmd-home .hero-carousel .slide {
+    position: relative;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    will-change: transform;
+  }
+  /* 어둡게 오버레이 */
+  .kjmd-home .hero-carousel .slide::after{
+    content:"";
+    position:absolute; inset:0;
+    background: rgba(0,0,0,.35);
+    mix-blend-mode: multiply;
+  }
+  /* 중앙 타이틀 */
+  .kjmd-home .hero-caption {
+    position: absolute; inset: 0;
+    display: grid; place-items: center;
+    text-align: center; color: #fff;
+    padding: 1rem;
+    pointer-events: none;            /* 버튼 클릭 방해 안함 */
+  }
+  .kjmd-home .hero-caption .title {
+    font-size: clamp(1.8rem, 3vw + 1rem, 3rem);
+    line-height: 1.2;
+    font-weight: 700;
+    letter-spacing: .3px;
+    text-shadow: 0 2px 14px rgba(0,0,0,.45);
+    margin: 0 0 .5rem;
+  }
+  .kjmd-home .hero-caption .subtitle {
+    font-size: clamp(1rem, 1vw + .8rem, 1.25rem);
+    opacity: .95;
+    margin: 0;
+    text-shadow: 0 2px 12px rgba(0,0,0,.5);
+  }
+
+  /* 좌우 네비게이션 */
+  .kjmd-home .hero-nav {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 .5rem;
+    pointer-events: none;
+  }
+  .kjmd-home .hero-btn {
+    pointer-events: auto;
+    width: 42px; height: 42px; border-radius: 999px;
+    display: grid; place-items: center;
+    border: 1.5px solid rgba(255,255,255,.65);
+    background: rgba(0,0,0,.25);
+    color: #fff; cursor: pointer;
+    transition: .2s;
+  }
+  .kjmd-home .hero-btn:hover { background: rgba(0,0,0,.45); }
+
+  /* 점(인디케이터) */
+  .kjmd-home .dots {
+    position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%);
+    display: flex; gap: 8px;
+  }
+  .kjmd-home .dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: rgba(255,255,255,.5);
+    border: 1px solid rgba(0,0,0,.2);
+    cursor: pointer;
+  }
+  .kjmd-home .dot[aria-current="true"] { background: #fff; }
+
+  /* ====== Content sections ====== */
+  .kjmd-home .section {
+    margin: 2.5rem 0 3.25rem;
+  }
+  .kjmd-home .section h2 {
+    margin-bottom: .85rem;
+    color: var(--mm-primary, #2a7ae2);
+    font-weight: 800;
+  }
+
+  /* News cards */
+  .kjmd-home .news-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: .8rem;
+    padding: 0; list-style: none; margin: 0;
+  }
+  @media (min-width: 720px){
+    .kjmd-home .news-list { grid-template-columns: 1fr 1fr; }
+  }
+  .kjmd-home .news-card {
+    border: 1px solid #e5e8ec;
+    border-radius: 10px;
+    padding: .9rem 1rem;
+    background: #fff;
+    box-shadow: 0 2px 10px rgba(0,0,0,.03);
+  }
+  .kjmd-home .news-card header{
+    display: flex; align-items: center; gap: .5rem; margin-bottom: .35rem;
+  }
+  .kjmd-home .badge {
+    font-size: .72rem; font-weight: 700;
+    background: #ffe9ef; color: #d23c63;
+    border: 1px solid #ffc9d7; border-radius: 6px;
+    padding: .15rem .45rem;
+  }
+  .kjmd-home .news-card time { color: #607d8b; font-size: .85rem; }
+  .kjmd-home .news-card p { margin: .25rem 0 0; }
+
+  .kjmd-home .hero-carousel .slide > img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    object-position:center center;
+    display:block;
+  }
+
+  .kjmd-home{
+    /* 필요하면 여기 색상만 바꿔도 전체 톤이 따라옵니다 */
+    --brand: #2a7ae2;
+
+    /* 고정 팔레트 (안전한 파스텔 블루) */
+    --news-bg:       #eef5ff;  /* 카드 배경 */
+    --news-border:   #cfe1ff;  /* 카드 테두리 */
+    --news-shadow:   rgba(42,122,226,.06);
+
+    --badge-bg:      #e7f0ff;  /* NEW 배지 배경 */
+    --badge-border:  #c6d8ff;  /* NEW 배지 테두리 */
+    --badge-fg:      #2a63c2;  /* NEW 배지 글자색 */
+
+    --date-fg:       #5976a8;  /* 날짜 텍스트 */
+  }
+
+  /* 카드 */
+  .kjmd-home .news-card{
+    background: var(--news-bg);
+    border-color: var(--news-border);
+    box-shadow: 0 2px 10px var(--news-shadow);
+    transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease;
+  }
+  .kjmd-home .news-card:hover{
+    border-color: #b9d1ff;
+    box-shadow: 0 4px 16px rgba(42,122,226,.09);
+    transform: translateY(-1px);
+  }
+
+  /* 배지(NEW) */
+  .kjmd-home .badge{
+    background: var(--badge-bg);
+    border: 1px solid var(--badge-border);
+    color: var(--badge-fg);
+  }
+
+  /* 날짜 색상 */
+  .kjmd-home .news-card time{
+    color: var(--date-fg);
+  }
+
+  /* News 섬네일(정사각형, 크롭 없음) */
+  .kjmd-home .news-media{
+    display: grid;
+    grid-template-columns: 64px 1fr; /* 썸네일 | 본문 */
+    gap: 12px;
+    align-items: center;
+  }
+  .kjmd-home .news-thumb{
+    width: 64px; height: 64px;
+    border-radius: 8px;
+    background: transparent; /* 비율 여백은 투명 */
+    display: grid; place-items: center;
+  }
+  .kjmd-home .news-thumb img{
+    width: 100%; height: 100%;
+    object-fit: contain;      /* 비율 유지, 크롭 X */
+    object-position: center;
+    display: block;
+  }
+  /* 날짜/헤더 살짝 정리 */
+  .kjmd-home .news-card header{ margin: 0 0 .15rem; }
+  .kjmd-home .news-card time{ font-weight: 600; font-size: .9rem; }
+
+  @media (max-width: 480px){
+    .kjmd-home .news-media{ grid-template-columns: 52px 1fr; }
+    .kjmd-home .news-thumb{ width: 52px; height: 52px; }
+  }
+
+  /* No thumbnail → use a single column */
+  .kjmd-home .news-media.no-thumb { grid-template-columns: 1fr; }
+
+  @media (max-width: 480px){
+    .kjmd-home .news-media.no-thumb { grid-template-columns: 1fr; }
+  }
+
+
+</style>
+
+
+{% if page.header.overlay_color or page.header.overlay_image or page.header.image %}
+  {% include page__hero.html %}
+{% elsif page.header.video.id and page.header.video.provider %}
+  {% include page__hero_video.html %}
+{% endif %}
+
+{% assign breadcrumbs_enabled = site.breadcrumbs %}
+{% if page.breadcrumbs != null %}
+  {% assign breadcrumbs_enabled = page.breadcrumbs %}
+{% endif %}
+{% if page.url != "/" and breadcrumbs_enabled %}
+  {% unless paginator %}
+    {% include breadcrumbs.html %}
+  {% endunless %}
+{% endif %}
+
+<div id="main" role="main">
+  {% include sidebar.html %}
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork"{% if page.locale %} lang="{{ page.locale }}"{% endif %}>
+    {% if page.title %}<meta itemprop="headline" content="{{ page.title | replace: '|', '&#124;' | markdownify | strip_html | strip_newlines | escape_once }}">{% endif %}
+    {% if page.excerpt %}<meta itemprop="description" content="{{ page.excerpt | markdownify | strip_html | strip_newlines | escape_once }}">{% endif %}
+    {% if page.date %}<meta itemprop="datePublished" content="{{ page.date | date_to_xmlschema }}">{% endif %}
+    {% if page.last_modified_at %}<meta itemprop="dateModified" content="{{ page.last_modified_at | date_to_xmlschema }}">{% endif %}
+
+    <div class="page__inner-wrap">
+      {% unless page.header.overlay_color or page.header.overlay_image %}
+        <header>
+          {% if page.title -%}
+          <h1 id="page-title" class="page__title" itemprop="headline">
+            <a href="{{ page.url | absolute_url }}" itemprop="url">{{ page.title | markdownify | remove: "<p>" | remove: "</p>" }}</a>
+          </h1>
+          {%- endif %}
+          {% include page__meta.html %}
+        </header>
+      {% endunless %}
+
+      <section class="page__content" itemprop="text">
+        {% if page.toc %}
+          <aside class="sidebar__right {% if page.toc_sticky %}sticky{% endif %}">
+            <nav class="toc">
+              <header><h4 class="nav__title"><i class="fas fa-{{ page.toc_icon | default: 'file-alt' }}"></i> {{ page.toc_label | default: site.data.ui-text[site.locale].toc_label | default: "On this page" }}</h4></header>
+              {% include toc.html sanitize=true html=content h_min=1 h_max=6 class="toc__menu" skip_no_ids=true %}
+            </nav>
+          </aside>
+        {% endif %}
+
+      <div class="kjmd-home">
+
+        <section class="full-bleed hero-carousel" id="home-hero" aria-label="Featured venue images">
+
+            {% assign hero_dir = "/assets/images/hero" %}
+            {% assign slides = site.static_files | where_exp: "f", "f.path contains hero_dir" | sort: "name" %}
+
+            <div class="slides">
+              {% if slides and slides != empty %}
+                {% for f in slides %}
+                  <div class="slide">
+                    <img src="{{ f.path | relative_url }}" alt="slide {{ forloop.index }}" {% if forloop.first %}loading="eager"{% else %}loading="lazy"{% endif %}>
+                  </div>
+                {% endfor %}
+              {% else %}
+                <!-- 폴백: 이미지가 없을 때 최소 1~2장 수동 지정 -->
+                <div class="slide"><img src="{{ '/assets/images/hero/busan1.jpg' | relative_url }}" alt="slide 1" loading="eager"></div>
+                <div class="slide"><img src="{{ '/assets/images/hero/busan2.jpg' | relative_url }}" alt="slide 2" loading="lazy"></div>
+                <div class="slide"><img src="{{ '/assets/images/hero/busan3.jpg' | relative_url }}" alt="slide 2" loading="lazy"></div>
+                <div class="slide"><img src="{{ '/assets/images/hero/busan4.jpg' | relative_url }}" alt="slide 2" loading="lazy"></div>
+              {% endif %}
+            </div>
+
+            <div class="hero-caption">
+              <div>
+                <h1 class="title">7th Joint Korea-Japan Workshop on Management of Data</h1>
+                <p class="subtitle">Busan, Republic of Korea · October 24-26, 2025</p>
+              </div>
+            </div>
+
+            <div class="hero-nav">
+              <button class="hero-btn prev" aria-label="Previous slide"><i class="fas fa-chevron-left"></i></button>
+              <button class="hero-btn next" aria-label="Next slide"><i class="fas fa-chevron-right"></i></button>
+            </div>
+
+            <div class="dots" aria-hidden="true"></div>
+          </section>
+
+          <script>
+            (function(){
+              const el = document.querySelector('#home-hero');
+              if(!el) return;
+
+              const slidesTrack = el.querySelector('.slides');
+              const slides = Array.from(el.querySelectorAll('.slide'));
+              const dotsWrap = el.querySelector('.dots');
+              const btnNext = el.querySelector('.next');
+              const btnPrev = el.querySelector('.prev');
+
+              let i = 0, n = slides.length, timer = null, sx = null, dx = 0;
+
+              function go(k){
+                i = (k + n) % n;
+                el.style.setProperty('--x', (-100 * i) + '%');
+                const dots = dotsWrap.querySelectorAll('.dot');
+                dots.forEach((d, j)=>d.setAttribute('aria-current', j===i));
+              }
+              function next(){ go(i+1); }
+              function prev(){ go(i-1); }
+              function auto(){ clearInterval(timer); timer = setInterval(next, 6000); }
+
+              // Dots
+              dotsWrap.innerHTML = slides.map((_, j)=>(
+                `<button class="dot" type="button" aria-label="Go to slide ${j+1}"></button>`
+              )).join('');
+              dotsWrap.addEventListener('click', e=>{
+                const b = e.target.closest('.dot');
+                if(!b) return;
+                e.stopPropagation(); // don't bubble into swipe area
+                const dots = [...dotsWrap.querySelectorAll('.dot')];
+                go(dots.indexOf(b));
+                auto();
+              });
+
+              // Arrows
+              btnNext.addEventListener('click', e=>{ e.stopPropagation(); next(); auto(); });
+              btnPrev.addEventListener('click', e=>{ e.stopPropagation(); prev(); auto(); });
+
+              // Swipe (bind to slides track only; ignore when starting on controls)
+              function start(e){
+                if (e.target.closest('.hero-btn, .dot')) return; // don't hijack control clicks
+                sx = e.clientX; dx = 0;
+                if (slidesTrack.setPointerCapture) slidesTrack.setPointerCapture(e.pointerId);
+              }
+              function move(e){ if (sx == null) return; dx = e.clientX - sx; }
+              function end(){ 
+                if (sx == null) return;
+                if (Math.abs(dx) > 40) (dx < 0 ? next() : prev());
+                sx = null; dx = 0; auto();
+              }
+
+              slidesTrack.addEventListener('pointerdown', start, {passive:true});
+              slidesTrack.addEventListener('pointermove', move, {passive:true});
+              slidesTrack.addEventListener('pointerup', end);
+
+              go(0); auto();
+            })();
+          </script>
+
+
+          <!-- ===== Overview ===== -->
+          <section class="section">
+            <h2>KJMD 2025: Overview</h2>
+            <p>
+              KJMD is an annual venue where researchers from Korea and Japan share results
+              in data management and engage in discussions to foster collaboration.
+            </p>
+          </section>
+
+
+          <!-- ===== News ===== -->
+          <section class="section">
+            <h2>News</h2>
+            <ul class="news-list">
+
+              <li class="news-card">
+                <div class="news-media no-thumb">
+                  <div>
+                    <header><time datetime="2025-09-14">2025.09.14</time></header>
+                    <p>All keynotes and presentations are now finalized! Check out the complete program lineup of keynotes, orals, and posters.</p>
+                  </div>
+                </div>
+              </li>
+
+              <li class="news-card">
+                <div class="news-media no-thumb">
+                  <div>
+                    <header><time datetime="2025-09-08">2025.09.08</time></header>
+                    <p>The KJMD 2025 website is complete and ready to roll!</p>
+                  </div>
+                </div>
+              </li>
+
+              <li class="news-card">
+                <div class="news-media">
+                  <div class="news-thumb">
+                    <img src="{{ '/assets/images/kjmd_logo.png' | relative_url }}" alt = "KJMD 2025 Logo">
+                  </div>
+                  <div>
+                    <header><time datetime="2025-09-07">2025.09.07</time></header>
+                    <p>The KJMD 2025 logo has been created!</p>
+                  </div>
+                </div>
+              </li>
+
+              <li class="news-card">
+                <div class="news-media">
+                  <div class="news-thumb">
+                    <img src="{{ '/assets/images/posaka_nuki.png' | relative_url }}" alt="KJMD Logo">
+                  </div>
+                  <div>
+                    <header><time datetime="2025-09-06">2025.09.06</time></header>
+                    <p>The KJMD logo has been created!</p>
+                  </div>
+                </div>
+              </li>
+
+            </ul>
+          </section>
+
+
+      </div>
+
+        
+        {% if page.link %}<div><a href="{{ page.link }}" class="btn btn--primary">{{ site.data.ui-text[site.locale].ext_link_label | default: "Direct Link" }}</a></div>{% endif %}
+      </section>
+
+      <footer class="page__meta">
+        {% if site.data.ui-text[site.locale].meta_label %}
+          <h4 class="page__meta-title">{{ site.data.ui-text[site.locale].meta_label }}</h4>
+        {% endif %}
+        {% include page__taxonomy.html %}
+        {% include page__date.html %}
+      </footer>
+
+      {% if page.share %}{% include social-share.html %}{% endif %}
+
+      {% include post_pagination.html %}
+    </div>
+
+    {% if site.comments.provider and page.comments %}
+      {% if jekyll.environment == 'production' %}
+        {% include comments.html %}
+      {% else %}
+        <p>
+          Comments are configured with provider: <strong>{{ site.comments.provider }}</strong>,
+          but are disabled in non-production environments.
+        </p>
+      {% endif %}
+    {% endif %}
+  </article>
+
+  {% comment %}<!-- only show related on a post page when `related: true` -->{% endcomment %}
+  {% if page.id and page.related and site.related_posts.size > 0 %}
+    {% include page__related.html posts=site.related_posts %}
+  {% comment %}<!-- otherwise show recent posts if no related when `related: true` -->{% endcomment %}
+  {% elsif page.id and page.related %}
+    {% include page__related.html posts=site.posts %}
+  {% endif %}
+</div>

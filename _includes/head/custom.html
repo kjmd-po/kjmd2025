@@ -1,5 +1,55 @@
 <!-- start custom head snippets -->
 
 <!-- insert favicons. use https://realfavicongenerator.net/ -->
+<link rel="icon" type="image/x-icon" href="{{ '/favicon.ico' | relative_url }}">
 
 <!-- end custom head snippets -->
+<!-- Custom dropdown script -->
+<script defer src="{{ '/assets/js/dropdown-navigation.js?v=3' | relative_url }}"></script>
+
+<!-- Minimal CSS so the dropdown can open/close -->
+<style>
+  /* let dropdowns escape the bar (the key fix is .visible-links) */
+  .masthead,
+  .masthead__inner-wrap,
+  .masthead__menu,
+  .greedy-nav,
+  .greedy-nav .visible-links,
+  .greedy-nav .hidden-links { overflow: visible !important; }
+
+  .masthead { position: relative; z-index: 100; }
+
+  /* dropdown positioning & look */
+  .masthead__menu-item.has-dropdown { position: relative; }
+  .masthead__menu-item.has-dropdown > .dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 9999;
+    background: #fff;
+    min-width: 220px;
+    border: 1px solid rgba(0,0,0,.1);
+    box-shadow: 0 8px 24px rgba(0,0,0,.12);
+    padding: .5rem 0;
+  }
+
+  /* show the menu when active OR when the toggle has aria-expanded=true */
+  .masthead__menu-item.has-dropdown.dropdown-active > .dropdown-menu,
+  .masthead__menu-item.has-dropdown > .dropdown-toggle[aria-expanded="true"] + .dropdown-menu {
+    display: block;
+  }
+
+  /* optional: keep hover open on pointer devices */
+  @media (hover:hover) {
+    .masthead__menu-item.has-dropdown:hover > .dropdown-menu { display: block; }
+  }
+
+  /* make the toggle look like normal masthead links */
+  .greedy-nav .visible-links > li > a.dropdown-toggle {
+    text-decoration: none;
+    padding: 0;
+    background: none;
+    border: 0;
+  }
+</style>

@@ -1,0 +1,296 @@
+---
+layout: default
+---
+
+{% if page.header.overlay_color or page.header.overlay_image or page.header.image %}
+  {% include page__hero.html %}
+{% elsif page.header.video.id and page.header.video.provider %}
+  {% include page__hero_video.html %}
+{% endif %}
+
+{% assign breadcrumbs_enabled = site.breadcrumbs %}
+{% if page.breadcrumbs != null %}
+  {% assign breadcrumbs_enabled = page.breadcrumbs %}
+{% endif %}
+{% if page.url != "/" and breadcrumbs_enabled %}
+  {% unless paginator %}
+    {% include breadcrumbs.html %}
+  {% endunless %}
+{% endif %}
+
+<div id="main" role="main">
+  {% include sidebar.html %}
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork"{% if page.locale %} lang="{{ page.locale }}"{% endif %}>
+    {% if page.title %}<meta itemprop="headline" content="{{ page.title | replace: '|', '&#124;' | markdownify | strip_html | strip_newlines | escape_once }}">{% endif %}
+    {% if page.excerpt %}<meta itemprop="description" content="{{ page.excerpt | markdownify | strip_html | strip_newlines | escape_once }}">{% endif %}
+    {% if page.date %}<meta itemprop="datePublished" content="{{ page.date | date_to_xmlschema }}">{% endif %}
+    {% if page.last_modified_at %}<meta itemprop="dateModified" content="{{ page.last_modified_at | date_to_xmlschema }}">{% endif %}
+
+    <div class="page__inner-wrap">
+      {% unless page.header.overlay_color or page.header.overlay_image %}
+        <header>
+          {% if page.title -%}
+          <h1 id="page-title" class="page__title" itemprop="headline">
+            <a href="{{ page.url | absolute_url }}" itemprop="url">{{ page.title | markdownify | remove: "<p>" | remove: "</p>" }}</a>
+          </h1>
+          {%- endif %}
+          {% include page__meta.html %}
+        </header>
+      {% endunless %}
+
+      <section class="page__content" itemprop="text">
+        {% if page.toc %}
+          <aside class="sidebar__right {% if page.toc_sticky %}sticky{% endif %}">
+            <nav class="toc">
+              <header><h4 class="nav__title"><i class="fas fa-{{ page.toc_icon | default: 'file-alt' }}"></i> {{ page.toc_label | default: site.data.ui-text[site.locale].toc_label | default: "On this page" }}</h4></header>
+              {% include toc.html sanitize=true html=content h_min=1 h_max=6 class="toc__menu" skip_no_ids=true %}
+            </nav>
+          </aside>
+        {% endif %}
+
+        <!-- ===== Program (Keynotes) ===== -->
+        <div class="program-schedule">
+          <style>
+            /* Pastel blue palette (scoped) */
+            .program-schedule{
+              --brand:#2a7ae2;
+              --bg:#eef5ff;          /* 기본 행 */
+              --row-strong:#e3ecff;  /* Talk/Keynote 강조 행 */
+              --border:#cfe1ff;
+              --header:#dbe7ff;      /* 헤더를 조금 더 진하게 */
+              --header-br:#b8d0ff;
+              --header-fg:#163a76;   /* 헤더 텍스트 */
+              --muted:#5976a8;       /* 시간/보조 텍스트 */
+              --shadow:rgba(42,122,226,.08);
+              --badge-bg:#e7f0ff;
+              --badge-fg:#2a63c2;
+              --badge-br:#c6d8ff;
+            }
+
+            .program-schedule h2.day-title{
+              font-weight:800; margin:2.25rem 0 1rem;
+              display:inline-flex; align-items:center; gap:.6rem;
+            }
+            .program-schedule .day-chip{
+              background:var(--header); color:var(--header-fg);
+              border:1px solid var(--header-br);
+              border-radius:999px; padding:.25rem .6rem; font-size:.9rem; font-weight:700;
+            }
+
+            .program-schedule .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:2rem;}
+            .program-schedule table.schedule{width:100%;border-collapse:separate;border-spacing:0 10px;}
+
+            /* header (darker) */
+            .program-schedule thead th{
+              background:var(--header); color:var(--header-fg);
+              text-align:left; padding:.7rem .9rem; font-weight:800;
+              border:1px solid var(--header-br);
+            }
+            .program-schedule thead th:first-child{border-top-left-radius:12px;border-bottom-left-radius:12px;}
+            .program-schedule thead th:last-child{border-top-right-radius:12px;border-bottom-right-radius:12px;}
+
+            /* rows */
+            .program-schedule tbody td{
+              background:var(--bg); border:1px solid var(--border);
+              padding:.8rem .95rem; vertical-align:top;
+              transition:box-shadow .15s ease,border-color .15s ease,transform .15s ease;
+            }
+            .program-schedule tbody tr:hover td{
+              box-shadow:0 4px 16px var(--shadow); border-color:#b9d1ff; transform:translateY(-1px);
+            }
+            .program-schedule tbody td:first-child{
+              border-top-left-radius:12px;border-bottom-left-radius:12px;
+              white-space:nowrap;width:160px;color:var(--muted);font-weight:700;
+            }
+            .program-schedule tbody td:last-child{border-top-right-radius:12px;border-bottom-right-radius:12px;}
+
+            /* Talk / Keynote 강조 행 */
+            .program-schedule tr.type-talk td,
+            .program-schedule tr.type-keynote td{
+              background:var(--row-strong);
+              border-color:#bcd3ff;
+            }
+
+            /* labels */
+            .program-schedule .tag{
+              display:inline-block;font-size:.78rem;font-weight:700;
+              background:var(--badge-bg);color:var(--badge-fg);
+              border:1px solid var(--badge-br);border-radius:6px;
+              padding:.12rem .4rem;margin-right:.4rem;
+            }
+
+            .program-schedule .mini{margin:.4rem 0 0 1rem;}
+            .program-schedule .mini li{margin:.15rem 0;}
+
+            /* Mobile */
+            @media (max-width:600px){
+              .program-schedule tbody td{padding:.75rem .8rem;}
+              .program-schedule tbody td:first-child{width:120px;}
+            }
+
+            /* Center tables and cap their width */
+            .program-schedule .table-wrap { 
+              display: flex; 
+              justify-content: center; 
+            }
+
+            .program-schedule .table-wrap > table.schedule {
+              width: 100%;
+              max-width: 980px;   /* tweak this value as you like: 900-1100px works well */
+            }
+
+          </style>
+
+          <!-- ===== Day 1 (Keynotes) ===== -->
+          <h2 class="day-title">Keynotes <span class="day-chip">Oct. 24 (Fri)</span></h2>
+          <p style="font-size: 0.8rem; color: var(--header-fg); font-weight: 600;">Session Chair: Wook-Shin Han</p>
+          <div class="table-wrap">
+            <table class="schedule">
+              <thead>
+                <tr><th>Time</th><th>Speaker</th><th>Info</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>15:00 – 15:30</td>
+                  <td>—</td>
+                  <td><span class="tag">Registration</span> Registration</td>
+                </tr>
+
+                <tr class="type-talk">
+                  <td>15:30 – 16:00</td>
+                  <td>Wook-Shin Han</td>
+                  <td><span class="tag">Opening</span> Welcome & Overview</td>
+                </tr>
+
+                <tr class="type-keynote">
+                  <td>16:00 – 17:00</td>
+                  <td>Sourav Bhowmick</td>
+                  <td><span class="tag">Keynote 1</span> What Can Cognitive Psychology Do For Data Management?</td>
+                </tr>
+
+                <tr class="type-keynote">
+                  <td>17:00 – 18:00</td>
+                  <td>Makoto Onizuka</td>
+                  <td><span class="tag">Keynote 2</span> From Walk-Level GNNs to GraphRAG: Towards Knowledge-Enhanced Graph Intelligence</td>
+                </tr>
+
+                <tr>
+                  <td>18:30 - 22:00</td>
+                  <td>—</td>
+                  <td><span class="tag">Reception</span> Welcome Reception (Introduction about AI Database Systems that Support Analysis and Reasoning Over Multimodal Data)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- ===== Day 2 (Orals & Posters) ===== -->
+          <h2 class="day-title">Orals & Posters <span class="day-chip">Oct. 25 (Sat)</span></h2>
+          <p style="font-size: 0.8rem; color: var(--header-fg); font-weight: 600;">Session Chair: Joohyung Yun</p>
+          <div class="table-wrap">
+            <table class="schedule">
+              <thead>
+                <tr><th>Time</th><th>Speaker</th><th>Info</th></tr>
+              </thead>
+              <tbody>
+                <!-- Talks (25 min each) – morning -->
+                <tr class="type-talk"><td>09:20 - 09:40</td><td>Joohyung Yun</td><td><span class="tag">Oral</span> Open-domain Multimodal Multihop Retrieval by Late Interactioning in a Bigranular Graph Structure</td></tr>
+                <tr class="type-talk"><td>09:40 - 10:00</td><td>Lyu He</td><td><span class="tag">Oral</span> Verifiable Machine Learning: Bridging the Trust Gap</td></tr>
+                <tr class="type-talk"><td>10:00 - 10:20</td><td>Sangoh Lee</td><td><span class="tag">Oral</span> Efficient Knowledge Graph Querying via Schema-Driven Approximate Distance Joins</td></tr>
+                <tr class="type-talk"><td>10:20 - 10:40</td><td>Takahiro Mitani</td><td><span class="tag">Oral</span> Accelerating LocalSearch++ for K-Means++ Clustering with Projection-Based Distance Lower Bounds</td></tr>
+                <tr class="type-talk"><td>10:40 - 11:00</td><td>Sungho Park</td><td><span class="tag">Oral</span> Benchmark for Multi-hop QA over Text and Tables</td></tr>
+
+                <!-- Lunch -->
+                <tr>
+                  <td>11:00 – 12:30</td>
+                  <td>—</td>
+                  <td><span class="tag">Lunch</span> Lunch break</td>
+                </tr>
+
+                <!-- Talks (25 min each) – afternoon -->
+                <tr class="type-talk"><td>12:30 - 12:50</td><td>Itsuki Nakayama</td><td><span class="tag">Oral</span> Knowledge Distillation from Multiple GNNs to a Single MLP: An Approach via Aggregation of Individually Distilled MLPs</td></tr>
+                <tr class="type-talk"><td>12:50 - 13:10</td><td>Yukyoung Lee</td><td><span class="tag">Oral</span> Cardinality Estimation under Data Updates</td></tr>
+                <tr class="type-talk"><td>13:10 - 13:30</td><td>Yutaka Kojima</td><td><span class="tag">Oral</span> Benchmarking Popularity Bias in Recommender Systems: A Comprehensive Evaluation across Diverse Datasets</td></tr>
+                <tr class="type-talk"><td>13:30 - 13:50</td><td>Wonseok Lee</td><td><span class="tag">Oral</span> A Fast Database Replay System</td></tr>
+                <tr class="type-talk"><td>13:50 - 14:10</td><td>Zengqing Wu</td><td><span class="tag">Oral</span> The Hidden Strength of Disagreement: Unraveling the Consensus-diversity Tradeoff in Adaptive Multi-agent Systems</td></tr>
+
+                <!-- Break (30m) -->
+                <tr>
+                  <td>14:10 – 14:30</td>
+                  <td>—</td>
+                  <td><span class="tag">Break</span> Coffee & Networking</td>
+                </tr>
+
+                <!-- Poster (1h) -->
+                <tr>
+                  <td>14:30 – 15:30</td>
+                  <td>—</td>
+                  <td><span class="tag">Poster Session</span> Poster Presentations</td>
+                </tr>
+
+                <!-- Discussion -->
+                <tr>
+                  <td>15:30 – 20:00</td>
+                  <td>—</td>
+                  <td><span class="tag">Brainstorming</span> Brainstorming on AI Database Systems that Support Analysis and Reasoning Over Multimodal Data</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- ===== Day 3 (Discussions & Brainstorming) ===== -->
+          <h2 class="day-title">Discussions & Brainstorming <span class="day-chip">Oct. 26 (Sun)</span></h2>
+          <div class="table-wrap">
+            <table class="schedule">
+              <thead>
+                <tr><th>Time</th><th>Speaker</th><th>Info</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>09:00 - 12:00</td>
+                  <td>—</td>
+                  <td><span class="tag">Brainstorming</span> Brainstorming on AI Database Systems that Support Analysis and Reasoning Over Multimodal Data</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+        <!-- ===== /Program ===== -->
+
+        {% if page.link %}<div><a href="{{ page.link }}" class="btn btn--primary">{{ site.data.ui-text[site.locale].ext_link_label | default: "Direct Link" }}</a></div>{% endif %}
+      </section>
+
+      <footer class="page__meta">
+        {% if site.data.ui-text[site.locale].meta_label %}
+          <h4 class="page__meta-title">{{ site.data.ui-text[site.locale].meta_label }}</h4>
+        {% endif %}
+        {% include page__taxonomy.html %}
+        {% include page__date.html %}
+      </footer>
+
+      {% if page.share %}{% include social-share.html %}{% endif %}
+
+      {% include post_pagination.html %}
+    </div>
+
+    {% if site.comments.provider and page.comments %}
+      {% if jekyll.environment == 'production' %}
+        {% include comments.html %}
+      {% else %}
+        <p>
+          Comments are configured with provider: <strong>{{ site.comments.provider }}</strong>,
+          but are disabled in non-production environments.
+        </p>
+      {% endif %}
+    {% endif %}
+  </article>
+
+  {% comment %}<!-- only show related on a post page when `related: true` -->{% endcomment %}
+  {% if page.id and page.related and site.related_posts.size > 0 %}
+    {% include page__related.html posts=site.related_posts %}
+  {% comment %}<!-- otherwise show recent posts if no related when `related: true` -->{% endcomment %}
+  {% elsif page.id and page.related %}
+    {% include page__related.html posts=site.posts %}
+  {% endif %}
+</div>

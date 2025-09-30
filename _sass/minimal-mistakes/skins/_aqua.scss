@@ -1,34 +1,38 @@
 /* ==========================================================================
-   Aqua skin
+   Aqua (Pastel Blue) skin
    ========================================================================== */
 
-/* Colors */
-$gray                       : #1976d2 !default;
-$dark-gray                  : mix(#000, $gray, 40%) !default;
-$darker-gray                : mix(#000, $gray, 60%) !default;
-$light-gray                 : mix(#fff, $gray, 50%) !default;
-$lighter-gray               : mix(#fff, $gray, 90%) !default;
+/* Core hue used to derive tints/shades (soft blue) */
+$gray                       : #3f7bd9 !default; /* primary pastel-blue anchor */
 
-$body-color                 : #fff !default;
-$background-color           : #f0fff0 !default;
-$code-background-color      : $lighter-gray !default;
+/* Derived grays (theme uses these widely for UI backgrounds/borders) */
+$dark-gray                  : mix(#000, $gray, 40%) !default;  /* headings/text */
+$darker-gray                : mix(#000, $gray, 60%) !default;
+$light-gray                 : mix(#fff, $gray, 50%) !default;  /* medium pastel blue */
+$lighter-gray               : mix(#fff, $gray, 90%) !default;  /* header/footer/backplates */
+
+/* Surfaces */
+$body-color                 : #ffffff !default;
+$background-color           : #f5f9ff !default;               /* page background (very light pastel blue) */
+$code-background-color      : $lighter-gray !default;         /* subtle blue panel */
 $code-background-color-dark : $light-gray !default;
 $text-color                 : $dark-gray !default;
 $border-color               : $lighter-gray !default;
 
-$primary-color              : $gray !default;
-$success-color              : #27ae60 !default;
-$warning-color              : #e67e22 !default;
-$danger-color               : #c0392b !default;
-$info-color                 : #03a9f4 !default;
+/* Brand & semantic colors */
+$primary-color              : $gray !default;                 /* buttons, accents */
+$success-color              : #2ea36a !default;               /* gentle green */
+$warning-color              : #e3a14b !default;               /* soft amber */
+$danger-color               : #cc4f4b !default;               /* soft red */
+$info-color                 : #2a7ae2 !default;               /* link/notice blue */
 
-/* links */
+/* Links */
 $link-color                 : $info-color !default;
 $link-color-hover           : mix(#000, $link-color, 25%) !default;
 $link-color-visited         : mix(#fff, $link-color, 25%) !default;
 $masthead-link-color        : $primary-color !default;
 $masthead-link-color-hover  : mix(#000, $primary-color, 25%) !default;
 
-/* notices */
-$notice-background-mix: 90% !default;
-$code-notice-background-mix: 95% !default;
+/* Notices (kept soft to match pastel theme) */
+$notice-background-mix      : 90% !default;
+$code-notice-background-mix : 95% !default;

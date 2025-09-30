@@ -1,0 +1,185 @@
+---
+layout: default
+---
+
+
+<style>
+    /* 이 블록은 이 페이지 안에서만 적용됩니다 */
+    .officers .section-title{
+    border-left: 6px solid #2a7ae2;       /* 왼쪽 세로줄 색/두께 */
+    padding-left: .9rem;                   /* 제목과 세로줄 간격 */
+    margin: 2rem 0 1rem;
+    font-weight: 700;
+    }
+    .officers .officer-list{
+    list-style: none;                      /* 불릿 제거 */
+    padding: 0;
+    margin: .25rem 0 2rem;
+    }
+    .officers .officer-list li{ margin: .35rem 0; }
+    .officers .name{ font-weight: 700; }     /* 이름은 진하게 */
+    .officers .affil{
+    color: #6f7e8b;                        /* 소속은 회색 */
+    font-size: .9em;                       /* 살짝 작게 */
+    margin-left: .25rem;
+    }
+
+    .officers .officer-list li{
+    display: flex;
+    align-items: center;
+    gap: .25rem;
+    }
+    .officers .home-link{
+    margin-left: auto;              /* 오른쪽 끝으로 밀기 */
+    display: inline-grid;
+    place-items: center;
+    width: 28px; height: 28px;      /* 정사각형 버튼 */
+    border: 1.5px solid #c7d1db;  /* 아웃라인 */
+    border-radius: 6px;
+    color: #6f7e8b;               /* 아이콘 회색 */
+    text-decoration: none;
+    }
+    .officers .home-link:hover,
+    .officers .home-link:focus{
+    border-color: #2a7ae2;        /* 호버 시 포인트 색상 */
+    color: #2a7ae2;
+    outline: none;
+    }
+    .officers .home-link i{
+    font-size: .95rem;
+    line-height: 1;
+    }
+</style>
+
+
+{% if page.header.overlay_color or page.header.overlay_image or page.header.image %}
+  {% include page__hero.html %}
+{% elsif page.header.video.id and page.header.video.provider %}
+  {% include page__hero_video.html %}
+{% endif %}
+
+{% assign breadcrumbs_enabled = site.breadcrumbs %}
+{% if page.breadcrumbs != null %}
+  {% assign breadcrumbs_enabled = page.breadcrumbs %}
+{% endif %}
+{% if page.url != "/" and breadcrumbs_enabled %}
+  {% unless paginator %}
+    {% include breadcrumbs.html %}
+  {% endunless %}
+{% endif %}
+
+<div id="main" role="main">
+  {% include sidebar.html %}
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork"{% if page.locale %} lang="{{ page.locale }}"{% endif %}>
+    {% if page.title %}<meta itemprop="headline" content="{{ page.title | replace: '|', '&#124;' | markdownify | strip_html | strip_newlines | escape_once }}">{% endif %}
+    {% if page.excerpt %}<meta itemprop="description" content="{{ page.excerpt | markdownify | strip_html | strip_newlines | escape_once }}">{% endif %}
+    {% if page.date %}<meta itemprop="datePublished" content="{{ page.date | date_to_xmlschema }}">{% endif %}
+    {% if page.last_modified_at %}<meta itemprop="dateModified" content="{{ page.last_modified_at | date_to_xmlschema }}">{% endif %}
+
+    <div class="page__inner-wrap">
+      {% unless page.header.overlay_color or page.header.overlay_image %}
+        <header>
+          {% if page.title -%}
+          <h1 id="page-title" class="page__title" itemprop="headline">
+            <a href="{{ page.url | absolute_url }}" itemprop="url">{{ page.title | markdownify | remove: "<p>" | remove: "</p>" }}</a>
+          </h1>
+          {%- endif %}
+          {% include page__meta.html %}
+        </header>
+      {% endunless %}
+
+      <section class="page__content" itemprop="text">
+        {% if page.toc %}
+          <aside class="sidebar__right {% if page.toc_sticky %}sticky{% endif %}">
+            <nav class="toc">
+              <header><h4 class="nav__title"><i class="fas fa-{{ page.toc_icon | default: 'file-alt' }}"></i> {{ page.toc_label | default: site.data.ui-text[site.locale].toc_label | default: "On this page" }}</h4></header>
+              {% include toc.html sanitize=true html=content h_min=1 h_max=6 class="toc__menu" skip_no_ids=true %}
+            </nav>
+          </aside>
+        {% endif %}
+        
+        
+        <div class="officers">
+
+            <h2 class="section-title">General Chairs</h2>
+            <ul class="officer-list">
+            <li>
+                <span class="name">Wook-Shin Han</span>
+                <span class="affil">POSTECH, Korea</span>
+                <a class="home-link" href="https://wscrony.github.io/" target="_blank" rel="noopener" aria-label="Wook-Shin Han homepage">
+                <i class="fas fa-home" aria-hidden="true"></i>
+                </a>
+            </li>
+            <li>
+                <span class="name">Makoto Onizuka</span>
+                <span class="affil">Osaka University (UOsaka), Japan</span>
+                <a class="home-link" href="https://www-bigdata.ist.osaka-u.ac.jp/en/onizuka/" target="_blank" rel="noopener" aria-label="Makato Onizuka Homepage">
+                <i class="fas fa-home" aria-hidden="true"></i>
+                </a>
+            </li>
+            </ul>
+
+
+            <h2 class="section-title">Organization Chairs</h2>
+            <ul class="officer-list">
+            <li>
+                <span class="name">Joohyung Yun</span>
+                <span class="affil">POSTECH, Korea</span>
+                <a class="home-link" href="https://joohyung00.github.io/" target="_blank" rel="noopener" aria-label="Joohyung Yun homepage">
+                <i class="fas fa-home" aria-hidden="true"></i>
+                </a>
+            </li>
+            <li>
+                <span class="name">Guangcan Li</span>
+                <span class="affil">Osaka University (UOsaka), Japan</span>
+            </li>
+            </ul>
+
+            <!-- 필요하면 섹션을 계속 추가 -->
+            <!-- <h2 class="section-title">Associate Editors</h2>
+            <ul class="officer-list">
+                <li><span class="name">Firstname Lastname</span><span class="affil">Affiliation, Country</span></li>
+                <li><span class="name">Firstname Lastname</span><span class="affil">Affiliation, Country</span></li>
+            </ul> -->
+
+        </div>
+
+
+
+        {% if page.link %}<div><a href="{{ page.link }}" class="btn btn--primary">{{ site.data.ui-text[site.locale].ext_link_label | default: "Direct Link" }}</a></div>{% endif %}
+      </section>
+
+      <footer class="page__meta">
+        {% if site.data.ui-text[site.locale].meta_label %}
+          <h4 class="page__meta-title">{{ site.data.ui-text[site.locale].meta_label }}</h4>
+        {% endif %}
+        {% include page__taxonomy.html %}
+        {% include page__date.html %}
+      </footer>
+
+      {% if page.share %}{% include social-share.html %}{% endif %}
+
+      {% include post_pagination.html %}
+    </div>
+
+    {% if site.comments.provider and page.comments %}
+      {% if jekyll.environment == 'production' %}
+        {% include comments.html %}
+      {% else %}
+        <p>
+          Comments are configured with provider: <strong>{{ site.comments.provider }}</strong>,
+          but are disabled in non-production environments.
+        </p>
+      {% endif %}
+    {% endif %}
+  </article>
+
+  {% comment %}<!-- only show related on a post page when `related: true` -->{% endcomment %}
+  {% if page.id and page.related and site.related_posts.size > 0 %}
+    {% include page__related.html posts=site.related_posts %}
+  {% comment %}<!-- otherwise show recent posts if no related when `related: true` -->{% endcomment %}
+  {% elsif page.id and page.related %}
+    {% include page__related.html posts=site.posts %}
+  {% endif %}
+</div>
